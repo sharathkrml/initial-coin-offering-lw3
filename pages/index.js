@@ -23,6 +23,30 @@ export default function Home() {
   // tokensMinted is the total number of tokens that have been minted till now out of 10000(max total supply)
   const [tokensMinted, setTokensMinted] = useState(zero);
   const web3ModalRef = useRef();
+  const getProviderOrSigner = async (needSigner = false) => {
+    const connection = web3ModalRef.current.connect();
+    const provider = new providers.Web3Provider(connection);
+    // If user is not connected to the Rinkeby network, let them know and throw an error
+    const { chainId } = await provider.getNetwork();
+    if (chainId !== 4) {
+      window.alert("Change the network to Rinkeby");
+      throw new Error("Change network to Rinkeby");
+    }
+
+    if (needSigner) {
+      const signer = provider.getSigner();
+      return signer;
+    }
+    return provider;
+  };
+  const connectWallet = async () => {
+    try {
+      await getProviderOrSigner();
+      setWalletConnected(true);
+    } catch (err) {
+      console.error(err);
+    }
+  };
   useEffect(() => {
     // if wallet is not connected
     //  create a new instance of Web3Modal and connect the MetaMask wallet
