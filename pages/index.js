@@ -33,6 +33,63 @@ export default function Home() {
     }
     return provider;
   };
+  const getTotalTokensMinted = async () => {
+    try {
+      const provider = await getProviderOrSigner();
+      const tokenContract = new Contract(TOKEN_ADDRESS, TOKEN_ABI, provider);
+      const balance = await tokenContract.totalSupply();
+      console.log(balance);
+      setTotalTokensMinted(balance);
+    } catch (error) {
+      console.log(error);
+      setTotalTokensMinted(zero);
+    }
+  };
+  const getBalanceOfOwner = async () => {
+    try {
+      const provider = await getProviderOrSigner();
+      const tokenContract = new Contract(TOKEN_ADDRESS, TOKEN_ABI, provider);
+      const signer = await getProviderOrSigner(true);
+      const address = signer.getAddress();
+      const balance = await tokenContract.balanceOf(address);
+      setBalanceOfOwner(balance);
+    } catch (error) {
+      console.log(error);
+      setBalanceOfOwner(zero);
+    }
+  };
+  const getTokenDueToNFT = async () => {
+    try {
+      const provider = await getProviderOrSigner();
+      const nftContract = new Contract(
+        CRYPTO_DEVS_NFT_CONTRACT_ADDRESS,
+        CRYPTO_DEVS_NFT_ABI,
+        provider
+      );
+      const tokenContract = new Contract(TOKEN_ADDRESS, TOKEN_ABI, provider);
+      const signer = await getProviderOrSigner(true);
+      const address = signer.getAddress();
+      const balance = await nftContract.balanceOf(address);
+      console.log("no of nfts", balance);
+      if (balance === zero) {
+        setTokenDueToNFT(zero);
+      } else {
+        var amount = 0;
+        for (var i = 0; i < balance; i++) {
+          // get tokenId of user by index
+          const tokenId = await nftContract.tokenOfOwnerByIndex(address, i);
+          const claimed = await tokenContract.tokenIdsClaimed(tokenId);
+          if (!claimed) {
+            amount++;
+          }
+        }
+        setTokenDueToNFT(BigNumber.from(amount));
+      }
+    } catch (error) {
+      console.log(error);
+      setTokenDueToNFT(zero);
+    }
+  };
   const renderButton = () => {
     if (loading) {
       return (
@@ -47,9 +104,7 @@ export default function Home() {
           <div className={styles.description}>
             {tokenDueToNFT * 10} Tokens can be claimed!
           </div>
-          <button className={styles.button} onClick={claimCryptoDevTokens}>
-            Claim Tokens
-          </button>
+          <button className={styles.button}>Claim Tokens</button>
         </div>
       );
     }
@@ -88,6 +143,11 @@ export default function Home() {
       console.log(error);
     }
   };
+  const readAll = async () => {
+    await getBalanceOfOwner();
+    await getTotalTokensMinted();
+    await getTokenDueToNFT();
+  };
   useEffect(() => {
     if (!walletConnected) {
       web3ModalRef.current = new Web3Modal({
@@ -96,6 +156,7 @@ export default function Home() {
         disableInjectedProvider: false,
       });
       connectWallet();
+      readAll();
     }
   }, [walletConnected]);
 
