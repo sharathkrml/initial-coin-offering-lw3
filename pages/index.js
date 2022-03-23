@@ -58,6 +58,38 @@ export default function Home() {
       setBalanceOfOwner(zero);
     }
   };
+  const mintCryptoDevToken = async (amount) => {
+    try {
+      const signer = await getProviderOrSigner(true);
+      const tokenContract = new Contract(TOKEN_ADDRESS, TOKEN_ABI, signer);
+      const value = 0.001 * amount;
+      const tx = await tokenContract.mint(amount, {
+        value: utils.parseEther(value.toString()),
+      });
+      setLoading(true);
+      await tx.wait();
+      setLoading(false);
+      window.alert("Sucessfully minted Crypto Dev Tokens");
+      await readAll();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const claimCryptoDevToken = async () => {
+    try {
+      const signer = await getProviderOrSigner(true);
+      const tokenContract = new Contract(TOKEN_ADDRESS, TOKEN_ABI, signer);
+      const tx = await tokenContract.claim();
+      setLoading(true);
+      await tx.wait();
+      setLoading(false);
+      window.alert("Sucessfully minted Crypto Dev Tokens");
+      await readAll();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const getTokenDueToNFT = async () => {
     try {
       const provider = await getProviderOrSigner();
@@ -104,7 +136,9 @@ export default function Home() {
           <div className={styles.description}>
             {tokenDueToNFT * 10} Tokens can be claimed!
           </div>
-          <button className={styles.button}>Claim Tokens</button>
+          <button className={styles.button} onClick={claimCryptoDevToken}>
+            Claim Tokens
+          </button>
         </div>
       );
     }
@@ -128,7 +162,7 @@ export default function Home() {
         <button
           className={styles.button}
           disabled={!(inputAmount > 0)}
-          onClick={() => mintCryptoDevToken(tokenAmount)}
+          onClick={() => mintCryptoDevToken(inputAmount)}
         >
           Mint Tokens
         </button>
