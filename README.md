@@ -1,19 +1,11 @@
-# Basic Sample Hardhat Project
-
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
-
-Try running some of the following tasks:
-
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
-```
 Contract deployed to 
 ```
 0x1379bc175B14C7F3f3687d6d34870ecd3A71Ed0C
 ```
+Live : [https://initial-coin-offering-lw3.vercel.app/](https://initial-coin-offering-lw3.vercel.app/) 
+
+Go and mint Crypto Dev Token at (0.001 Rinkeby ETH / Token)
+  
+  OR
+
+Mint an NFT [https://nft-collection-lw3-flax.vercel.app/](https://nft-collection-lw3-flax.vercel.app/) to get 10 token free (0.01 Rinkeby ETH / NFT)
